@@ -1,6 +1,6 @@
 # MongoDB-AirBnB-analysis
 
-## Data Prepareation
+## Data Preparation
 ## Analysis
 
 ### Q1: AirBnB Search: Display list of stays in Salem with details: name, neighbourhood, room type, how many guests it accommodates, property type and amenities, per night’s cost and is available for the next two days in descending order of rating. 
@@ -141,6 +141,12 @@
 ```
 
 ### Q2
+
+
+### Q3
+
+### Q4: For “Entire home/apt” type listings in Portland provide it’s availability estimate for each month of Spring and Winter this year.
+
 ```
 [
   {
@@ -276,11 +282,6 @@
   },
 ]
 ```
-
-### Q3
-
-### Q4
-
 ### Q5
 
 ### Q6
