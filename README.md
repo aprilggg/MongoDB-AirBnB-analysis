@@ -141,6 +141,141 @@
 ```
 
 ### Q2
+```
+[
+  {
+    $addFields: {
+      month: {
+        $month: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
+      },
+      day: {
+        $dayOfMonth: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
+      },
+      year: {
+        $year: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
+      },
+    },
+  },
+  {
+    $addFields: {
+      season: {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $in: ["$month", [12, 1, 2]],
+              },
+              then: "Winter",
+            },
+            {
+              case: {
+                $in: ["$month", [3, 4, 5]],
+              },
+              then: "Spring",
+            },
+            {
+              case: {
+                $in: ["$month", [6, 7, 8]],
+              },
+              then: "Summer",
+            },
+            {
+              case: {
+                $in: ["$month", [9, 10, 11]],
+              },
+              then: "Fall",
+            },
+          ],
+          default: "Unknown",
+        },
+      },
+    },
+  },
+  {
+    $match: {
+      $and: [
+        {
+          year: 2023,
+        },
+        {
+          $or: [
+            {
+              $and: [
+                {
+                  season: "Spring",
+                },
+                {
+                  available: "t",
+                },
+              ],
+            },
+            {
+              $and: [
+                {
+                  season: "Winter",
+                },
+                {
+                  available: "t",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    $lookup: {
+      from: "Portland_listing",
+      localField: "listing_id",
+      foreignField: "id",
+      as: "listing",
+    },
+  },
+  {
+    $match: {
+      "listing.room_type": "Entire home/apt",
+    },
+  },
+  {
+    $project: {
+      listing_id: "$listing_id",
+      month: "$month",
+      season: "$season",
+    },
+  },
+  {
+    $group: {
+      _id: {
+        listing_id: "$listing_id",
+        month: "$month",
+        season: "$season",
+      },
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $sort: {
+      "_id.listing_id": 1,
+      "_id.month": 1,
+    },
+  },
+]
+```
 
 ### Q3
 
