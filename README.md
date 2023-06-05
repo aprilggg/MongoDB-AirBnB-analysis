@@ -301,7 +301,38 @@
   },
 ]
 ```
-### Q5
+### Q5 (Booking trend) For each city, how many reviews are received for December of each year?
+
+[
+  {
+    $addFields: {
+      month: {
+        $month: "$date",
+      },
+      year: {
+        $year: "$date",
+      },
+    },
+  },
+  {
+    $match: {
+      month: 12,
+    },
+  },
+  {
+    $group: {
+      _id: "$year",
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $sort: {
+      _id: 1,
+    },
+  },
+]
 
 ### Q6: Reminder to Book Again: In Salem, there any listings that a reviewer has reviewed more than thrice that is also available in the same month as was reviewed by them previously? (check against all the months that the previous reviews were posted on, if any match then it qualifies). AND are there any other listings by the same host that can be suggested? Display listing’s name, url, description, host’s name, reviewer name, whether previously booked (more than thrice and is available in the same month as was reviewed by them previously), availability days, minimum and maximum nights booking allowed.
 ```
