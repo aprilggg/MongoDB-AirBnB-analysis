@@ -1,4 +1,4 @@
-# MongoDB-AirBnB-analysis
+# MongoDB AirBnB Analysis
 
 ## Data Preparation
 ## Analysis
