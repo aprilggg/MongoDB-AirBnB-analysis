@@ -145,7 +145,7 @@
 
 ### Q3
 
-### Q4: For “Entire home/apt” type listings in Portland provide it’s availability estimate for each month of Spring and Winter this year.
+### Q4: Booking Trend for Spring versus Winter: For “Entire home/apt” type listings in Portland provide it’s availability estimate for each month of Spring and Winter this year.
 
 ```
 [
@@ -284,4 +284,320 @@
 ```
 ### Q5
 
-### Q6
+### Q6: Reminder to Book Again: In Salem, there any listings that a reviewer has reviewed more than thrice that is also available in the same month as was reviewed by them previously? (check against all the months that the previous reviews were posted on, if any match then it qualifies). AND are there any other listings by the same host that can be suggested? Display listing’s name, url, description, host’s name, reviewer name, whether previously booked (more than thrice and is available in the same month as was reviewed by them previously), availability days, minimum and maximum nights booking allowed.
+```
+[
+  {
+    $addFields: {
+      month: {
+        $month: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
+      },
+    },
+  },
+  {
+    $group: {
+      _id: {
+        listing_id: "$listing_id",
+        reviewer_id: "$reviewer_id",
+      },
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $match: {
+      count: {
+        $gt: 3,
+      },
+    },
+  },
+  {
+    $lookup: {
+      from: "Salem_reviews_unembedded",
+      localField: "_id.listing_id",
+      foreignField: "listing_id",
+      as: "match",
+    },
+  },
+  {
+    $project: {
+      match: {
+        $filter: {
+          input: "$match",
+          as: "m",
+          cond: {
+            $eq: [
+              "$$m.reviewer_id",
+              "$_id.reviewer_id",
+            ],
+          },
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      date: "$match.date",
+    },
+  },
+  {
+    $unwind: "$date",
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      month: {
+        $month: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
+      },
+    },
+  },
+  {
+    $lookup: {
+      from: "Salem_calendar_unembedded",
+      localField: "_id.listing_id",
+      foreignField: "listing_id",
+      as: "calendar",
+    },
+  },
+  {
+    $project: {
+      calendar: {
+        $filter: {
+          input: "$calendar",
+          as: "c",
+          cond: {
+            $eq: ["$$c.available", "t"],
+          },
+        },
+      },
+      month: 1,
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      month: 1,
+      datecal: "$calendar.date",
+    },
+  },
+  {
+    $unwind: "$datecal",
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      month: 1,
+      monthcal: {
+        $month: {
+          $dateFromString: {
+            dateString: "$datecal",
+          },
+        },
+      },
+    },
+  },
+  {
+    $match: {
+      $expr: {
+        $eq: ["$month", "$monthcal"],
+      },
+    },
+  },
+  {
+    $group: {
+      _id: {
+        listing_id: "$_id.listing_id",
+        reviewer_id: "$_id.reviewer_id",
+      },
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+    },
+  },
+  {
+    $lookup: {
+      from: "Salem_listing",
+      localField: "_id.listing_id",
+      foreignField: "id",
+      as: "listing",
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      host_id: "$listing.host_id",
+    },
+  },
+  {
+    $unwind: "$host_id",
+  },
+  {
+    $lookup: {
+      from: "Salem_listing",
+      localField: "host_id",
+      foreignField: "host_id",
+      as: "hostlist",
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      host_id: "$hostlist.host_id",
+      host_listing: "$hostlist.id",
+    },
+  },
+  {
+    $unwind: "$host_id",
+  },
+  {
+    $unwind: "$host_listing",
+  },
+  {
+    $group: {
+      _id: {
+        listing_id: "$_id.listing_id",
+        reviewer_id: "$_id.reviewer_id",
+        host_id: "$host_id",
+        host_listing: "$host_listing",
+      },
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $addFields: {
+      previously_booked_3_month: {
+        $cond: {
+          if: {
+            $eq: [
+              "$_id.host_listing",
+              "$_id.listing_id",
+            ],
+          },
+          then: "yes",
+          else: "no",
+        },
+      },
+    },
+  },
+  {
+    $lookup: {
+      from: "Salem_listing",
+      localField: "_id.listing_id",
+      foreignField: "id",
+      as: "listingdetails",
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      host_id: 1,
+      host_listing: 1,
+      previously_booked_3_month: 1,
+      listing_name: "$listingdetails.name",
+      listing_url: "$listingdetails.listing_url",
+      description: "$listingdetails.description",
+      host_name: "$listingdetails.host_name",
+      availability_365:
+        "$listingdetails.availability_365",
+      minimum_nights:
+        "$listingdetails.minimum_nights",
+      maximum_nights:
+        "$listingdetails.maximum_nights",
+    },
+  },
+  {
+    $unwind: "$listing_name",
+  },
+  {
+    $unwind: "$listing_url",
+  },
+  {
+    $unwind: "$description",
+  },
+  {
+    $unwind: "$host_name",
+  },
+  {
+    $unwind: "$availability_365",
+  },
+  {
+    $unwind: "$minimum_nights",
+  },
+  {
+    $unwind: "$maximum_nights",
+  },
+  {
+    $lookup: {
+      from: "Salem_reviews_unembedded",
+      localField: "_id.reviewer_id",
+      foreignField: "reviewer_id",
+      as: "reviewer_details",
+    },
+  },
+  {
+    $project: {
+      listing_id: 1,
+      reviewer_id: 1,
+      host_id: 1,
+      host_listing: 1,
+      previously_booked_3_month: 1,
+      listing_name: 1,
+      listing_url: 1,
+      description: 1,
+      host_name: 1,
+      availability_365: 1,
+      minimum_nights: 1,
+      maximum_nights: 1,
+      reviewer_name:
+        "$reviewer_details.reviewer_name",
+    },
+  },
+  {
+    $unwind: "$reviewer_name",
+  },
+  {
+    $group: {
+      _id: {
+        listing_id: "$_id.host_listing",
+        reviewer_id: "$_id.reviewer_id",
+        host_id: "$_id.host_id",
+        previously_booked_3_month:
+          "$previously_booked_3_month",
+        listing_name: "$listing_name",
+        listing_url: "$listing_url",
+        description: "$description",
+        host_name: "$host_name",
+        availability_365: "$availability_365",
+        minimum_nights: "$minimum_nights",
+        maximum_nights: "$maximum_nights",
+        reviewer_name: "$reviewer_name",
+      },
+    },
+  },
+]
+```
