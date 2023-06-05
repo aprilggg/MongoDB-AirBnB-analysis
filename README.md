@@ -140,7 +140,26 @@
 ]
 ```
 
-### Q2
+### Q2: Are there any neighbourhoods in any of the cities that don’t have any listings?
+```
+[
+  {
+    $lookup: {
+      from: "Portland_listing",
+      localField: "neighbourhood",
+      foreignField: "neighbourhood_cleansed",
+      as: "listing",
+    },
+  },
+  {
+    $match: {
+      listing: {
+        $eq: [],
+      },
+    },
+  },
+]
+```
 
 
 ### Q3
