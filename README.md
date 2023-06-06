@@ -438,10 +438,18 @@ Turned CSV file into JSON file
   {
     $addFields: {
       month: {
-        $month: "$date",
+        $month: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
       },
       year: {
-        $year: "$date",
+        $year: {
+          $dateFromString: {
+            dateString: "$date",
+          },
+        },
       },
     },
   },
