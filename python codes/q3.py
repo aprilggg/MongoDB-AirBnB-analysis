@@ -2,9 +2,9 @@ from pymongo import MongoClient
 import copy
 
 # Connection details
-connection_string = "mongodb://514investigation:2UgCpgjiOIMKn8Hq2QET4Oj07nUJWP68nzpij9QtQ2ul1HC0oxUSFFKOiEPnzFVql2zyTRcJYi2bACDbkZHVEA==@514investigation.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@514investigation@"
-database_name = "airbnb"
-collection_name = "Salem_listing"
+connection_string = "<connection_string>"
+database_name = "<database_name>"
+collection_name = "<collection_name>"
 
 client = MongoClient(connection_string)
 db = client[database_name]
