@@ -1,7 +1,19 @@
 # MongoDB AirBnB Analysis
 
 ## Data Preparation
-See preprocessing folder for data preparation details.
+
+### Listings: 
+From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city
+For columns of price, host_response_rate and host_acceptance_rate, changed from type String to type Float. NAN values are replaced by -1 during preprocessing
+### Neighbourhoods:  
+From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city 
+### Calendar: 
+The columns of Price and Adjusted Price are changed from type String to type Float. NAN values are replaced by -1 during preprocessing.
+Turned CSV file into nested JSON objects
+### Reviews: 
+Turned CSV file into nested JSON objects
+
+
 
 ## Analysis
 
