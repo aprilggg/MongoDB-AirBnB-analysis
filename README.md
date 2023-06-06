@@ -3,7 +3,7 @@
 ## Data Preparation
 
 ### Listings: 
-From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city
+From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city.
 For columns of price, host_response_rate and host_acceptance_rate, changed from type String to type Float. NAN values are replaced by -1 during preprocessing
 ### Neighbourhoods:  
 From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city 
