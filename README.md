@@ -162,8 +162,125 @@
 ```
 
 
-### Q3
+### Q3: (Availability for booking) For “Entire home/apt” type listings in Salem provide its availability estimate for each month – which chunks of time are bookable? Display listing’s name, whether it’s Entire home/apt, month, availability “from – to” date/or just date if minimum nights is 1, and minimum nights. 
 
+### NOTE: availability estimate: Chunks of time within which booking is possible. Compare the number of minimum nights against the consecutively available days. If there is availability on Friday, but Thursday, Saturday and Sunday are not available and the minimum number of days is 2, then Friday also doesn’t qualify for booking and is not part of the final result. Also, note, the minimum nights bookable for a listing may vary based on the day of the week). 
+```
+[
+  {
+    $match:
+      /**
+       * query: The query in MQL.
+       */
+      {
+        room_type: "Entire home/apt",
+      },
+  },
+  {
+    $lookup:
+      /**
+       * from: The target collection.
+       * localField: The local join field.
+       * foreignField: The target join field.
+       * as: The name for the results.
+       * pipeline: Optional pipeline to run on the foreign collection.
+       * let: Optional variables to use in the pipeline field stages.
+       */
+      {
+        from: "Salem_calendar_unembedded",
+        localField: "id",
+        foreignField: "listing_id",
+        as: "calendar_info",
+      },
+  },
+  {
+    $unwind: "$calendar_info",
+  },
+  {
+    $addFields:
+      /**
+       * newField: The new field name.
+       * expression: The new field expression.
+       */
+      {
+        month: {
+          $month: {
+            $dateFromString: {
+              dateString: "$calendar_info.date",
+            },
+          },
+        },
+        year: {
+          $year: {
+            $dateFromString: {
+              dateString: "$calendar_info.date",
+            },
+          },
+        },
+        day: {
+          $dayOfMonth: {
+            $dateFromString: {
+              dateString: "$calendar_info.date",
+            },
+          },
+        },
+        date: {
+          $dateFromString: {
+            dateString: "$calendar_info.date",
+          },
+        },
+        available: "$calendar_info.available",
+        min_night:
+          "$calendar_info.minimum_nights",
+      },
+  },
+  {
+    $project:
+      /**
+       * specifications: The fields to
+       *   include or exclude.
+       */
+      {
+        name: 1,
+        date: 1,
+        available: 1,
+        min_night: 1,
+        day: 1,
+        month: 1,
+        year: 1,
+      },
+  },
+  {
+    $match:
+      /**
+       * query: The query in MQL.
+       */
+      {
+        available: "t",
+      },
+  },
+  {
+    $group:
+      /**
+       * _id: The id of the group.
+       * fieldN: The first field name.
+       */
+      {
+        _id: {
+          name: "$name",
+          year: "$year",
+          month: "$month",
+          min_night: "$min_night",
+        },
+        items: {
+          $addToSet: {
+            date: "$day",
+          },
+        },
+      },
+  },
+]
+```
 ### Q4: Booking Trend for Spring versus Winter: For “Entire home/apt” type listings in Portland provide it’s availability estimate for each month of Spring and Winter this year.
 
 ```
