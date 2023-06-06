@@ -1,6 +1,7 @@
 # MongoDB AirBnB Analysis
 
 ## Data Preparation
+*Please find the code we used for data preparation in preprocessing folder*
 
 ### Listings: 
 From listings of all four cities, removed columns that have over ⅖ of NULL values among the whole columns in any of the city.
