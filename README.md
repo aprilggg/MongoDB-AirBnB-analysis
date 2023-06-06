@@ -162,7 +162,7 @@
 ```
 
 
-### Q3: (Availability for booking) For “Entire home/apt” type listings in Salem provide its availability estimate for each month – which chunks of time are bookable? Display listing’s name, whether it’s Entire home/apt, month, availability “from – to” date/or just date if minimum nights is 1, and minimum nights. 
+### Q3: Availability for booking: For “Entire home/apt” type listings in Salem provide its availability estimate for each month – which chunks of time are bookable? Display listing’s name, whether it’s Entire home/apt, month, availability “from – to” date/or just date if minimum nights is 1, and minimum nights. 
 
 ### NOTE: availability estimate: Chunks of time within which booking is possible. Compare the number of minimum nights against the consecutively available days. If there is availability on Friday, but Thursday, Saturday and Sunday are not available and the minimum number of days is 2, then Friday also doesn’t qualify for booking and is not part of the final result. Also, note, the minimum nights bookable for a listing may vary based on the day of the week). 
 ```
@@ -418,7 +418,7 @@
   },
 ]
 ```
-### Q5 (Booking trend) For each city, how many reviews are received for December of each year?
+### Q5: Booking trend: For each city, how many reviews are received for December of each year?
 ```
 [
   {
